@@ -17,6 +17,7 @@ let musicIndex = Math.floor((Math.random() * allMusic.length) + 1);
 
 window.addEventListener("load", () => {
     loadMusic(musicIndex);
+    playMusic();
     playingNow();
 });
 
@@ -132,6 +133,66 @@ repeatBtn.addEventListener("click", () => {
             break;
     }
 });
+
+
+//fast forward
+let isFastForwarding = false;
+let timeoutId;
+const SKIP_AMOUNT = 2; // Fast-forward by 5 seconds, adjust as needed
+
+function fastForward() {
+    if (isFastForwarding && mainAudio.currentTime + SKIP_AMOUNT <= mainAudio.duration) {
+        mainAudio.currentTime += SKIP_AMOUNT;
+        timeoutId = setTimeout(fastForward, 100); // Continue fast forwarding every 100ms
+    }
+}
+
+function handleMouseDownF() {
+    isFastForwarding = true;
+    fastForward(); // Start fast forwarding
+    nextBtn.innerHTML = "fast_forward";
+}
+
+function handleMouseUpF() {
+    isFastForwarding = false;
+    clearTimeout(timeoutId); // Clear any ongoing fast-forwarding
+    nextBtn.innerHTML = "skip_next";
+}
+
+nextBtn.addEventListener("mousedown", handleMouseDownF);
+nextBtn.addEventListener("mouseup", handleMouseUpF);
+nextBtn.addEventListener("touchstart", handleMouseDownF);
+nextBtn.addEventListener("touchend", handleMouseUpF);
+
+
+// fast rewind
+let isFastRewinding = false;
+
+function fastRewind() {
+    if (isFastRewinding && mainAudio.currentTime - SKIP_AMOUNT >= 0) {
+        mainAudio.currentTime -= SKIP_AMOUNT;
+        timeoutId = setTimeout(fastRewind, 100); // Continue rewinding every 100ms
+    }
+}
+
+function handleMouseDownR() {
+    isFastRewinding = true;
+    fastRewind(); // Start rewinding
+    prevBtn.innerHTML = "fast_rewind";
+}
+
+function handleMouseUpR() {
+    isFastRewinding = false;
+    clearTimeout(timeoutId); // Clear any ongoing rewinding
+    prevBtn.innerHTML = "skip_previous";
+}
+
+prevBtn.addEventListener('mousedown', handleMouseDownR);
+prevBtn.addEventListener('mouseup', handleMouseUpR);
+prevBtn.addEventListener('touchstart', handleMouseDownR);
+prevBtn.addEventListener('touchend', handleMouseUpR);
+
+
 
 //after the song ended
 mainAudio.addEventListener("ended", () => {
